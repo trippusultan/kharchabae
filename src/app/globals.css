@@ -165,3 +165,14 @@ svg { -webkit-tap-highlight-color: transparent; }
   border-radius: 14px;
   box-shadow: inset 3px 3px 8px var(--bg-dark), inset -3px -3px 8px var(--bg-light);
 }
+
+/* Auto-scrolling marquee for the "At a glance" strip.
+   Track holds TWO copies of the pills; translating -50% loops seamlessly. */
+.marquee { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+.marquee-track { display: flex; width: max-content; gap: 8px; animation: marqueeScroll 48s linear infinite; will-change: transform; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+@keyframes marqueeScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+  .marquee { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
+}

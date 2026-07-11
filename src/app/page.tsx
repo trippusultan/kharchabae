@@ -104,17 +104,21 @@ export default async function Home() {
             <h2 className="text-lg font-bold gold-text">At a glance</h2>
             <span className="text-xs text-[var(--muted)]">{ranked.length} cities · tap a pin on the map above</span>
           </div>
-          <div className="flex items-center gap-2 overflow-x-auto pb-1">
-            {ranked.map((c) => (
-              <a key={c.slug} href={`/city/${c.slug}`}
-                className="rank-row flex shrink-0 items-center gap-2 rounded-full px-3.5 py-2 transition hover:border-[var(--gold)]"
-                style={{ border: "1px solid transparent" }}
-                title={`${c.name} — ${inr(c.total)}/mo`}>
-                <span className="w-4 text-center text-xs font-semibold text-[var(--muted)]">{c.rank}</span>
-                <span className="whitespace-nowrap text-sm font-semibold">{c.name}</span>
-                <span className="gold-text text-sm font-bold">{inr(c.total)}</span>
-              </a>
-            ))}
+          <div className="marquee">
+            <div className="marquee-track">
+              {[...ranked, ...ranked].map((c, i) => (
+                <a key={`${c.slug}-${i}`} href={`/city/${c.slug}`}
+                  aria-hidden={i >= ranked.length}
+                  tabIndex={i >= ranked.length ? -1 : undefined}
+                  className="rank-row flex shrink-0 items-center gap-2 rounded-full px-3.5 py-2 transition hover:border-[var(--gold)]"
+                  style={{ border: "1px solid transparent" }}
+                  title={`${c.name} — ${inr(c.total)}/mo`}>
+                  <span className="w-4 text-center text-xs font-semibold text-[var(--muted)]">{c.rank}</span>
+                  <span className="whitespace-nowrap text-sm font-semibold">{c.name}</span>
+                  <span className="gold-text text-sm font-bold">{inr(c.total)}</span>
+                </a>
+              ))}
+            </div>
           </div>
         </div>
 
