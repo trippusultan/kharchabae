@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",
+    "seed": "tsx src/lib/seed-db.ts",
     "db:setup": "prisma generate && prisma db push --skip-generate && npm run seed"
   },
   "dependencies": {
