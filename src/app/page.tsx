@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/db";
 import { rankCities, inr } from "@/lib/cost";
-import { runRefresh } from "@/lib/queue";
 import { SEED_CITIES, totalOf } from "@/lib/seed";
 import { IndiaMapPro } from "@/components/IndiaMapPro";
 import { CityDeepPanel } from "@/components/CityDeepPanel";
@@ -8,7 +7,7 @@ import { SetupStatusPanel } from "@/components/SetupStatus";
 import { DeepDock } from "@/components/DeepDock";
 import { getSetupStatus } from "@/lib/setup";
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
 
 type Row = { slug: string; name: string; total: number; source: string; blurb: string };
 

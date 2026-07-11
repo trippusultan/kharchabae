@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState, useMemo, useCallback } from "react";
-import { geoMercator, geoPath, geoCentroid } from "d3-geo";
+import { geoMercator, geoCentroid } from "d3-geo";
 import { CITIES_GEO, STATE_OF, AREA_OFFSETS } from "@/lib/geodata";
 import { inr } from "@/lib/cost";
 import { CountUp } from "@/components/CountUp";
+import statesData from "@/lib/states.json";
 
 type Feat = { name: string; d: string };
 type View = { k: number; x: number; y: number };
@@ -57,19 +58,8 @@ export function IndiaMapPro({ totals }: { totals: Record<string, number> }) {
     return out;
   }, [base]);
 
-  // load geojson
-  useEffect(() => {
-    let alive = true;
-    fetch("/india-states.geojson")
-      .then((r) => r.json())
-      .then((gj: any) => {
-        if (!alive) return;
-        const path = geoPath(base);
-        setGeo(gj.features.map((f: any) => ({ name: f.properties.NAME_1, d: path(f) || "" })));
-      })
-      .catch(() => {});
-    return () => { alive = false; };
-  }, [base]);
+  // static, pre-simplified state geometry (no runtime fetch)
+  useEffect(() => { setGeo(statesData as Feat[]); }, []);
 
   // imperative animation loop (NO React re-render per frame)
   useEffect(() => {
