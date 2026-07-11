@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 import { rankCities, inr } from "@/lib/cost";
 import { SEED_CITIES, totalOf } from "@/lib/seed";
-import { IndiaMapPro } from "@/components/IndiaMapPro";
+import { MapLazy } from "@/components/MapLazy";
 import { CityDeepPanel } from "@/components/CityDeepPanel";
 import { SetupStatusPanel } from "@/components/SetupStatus";
 import { DeepDock } from "@/components/DeepDock";
@@ -97,7 +97,7 @@ export default async function Home() {
 
       <div className="grid lg:grid-cols-[1.6fr_1fr] gap-8">
         {/* HEART: the map */}
-        <IndiaMapPro totals={totals} />
+        <MapLazy totals={totals} />
 
         {/* DOCK: deep cost of selected city (client-side state via a tiny wrapper) */}
         <div className="neo p-6 md:p-7 min-h-[64vh] flex flex-col">

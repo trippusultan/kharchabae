@@ -1,13 +1,14 @@
 // KharchaBae — schema
-// NOTE: dev uses SQLite so `npm run dev` works with zero setup.
-// For production, change provider to "postgresql" and set DATABASE_URL to your Postgres URL.
+// Production uses PostgreSQL (Supabase / Neon / Vercel Postgres).
+// Set DATABASE_URL to your Postgres connection string.
+// The app falls back to seeded data when no DB is reachable, so it always runs.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

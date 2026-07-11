@@ -91,6 +91,26 @@ See `.env.example`. The essentials:
 - `POST /api/pay` — create a Razorpay order
 - `POST /api/razorpay-webhook` — verify payment (HMAC)
 
+## Database (PostgreSQL)
+
+The app runs on **seeded data with no database**. To make live scraped data
+**persist**, point `DATABASE_URL` at a Postgres instance (Supabase / Neon free tier).
+
+### Supabase (free, ~2 min)
+1. Create a project at https://supabase.com (free tier).
+2. Go to **Project Settings → Database → Connection string → URI** and copy it.
+3. Add it as `DATABASE_URL` in Vercel:
+   - Dashboard: Project → Settings → Environment Variables, **DATABASE_URL** = the URI.
+   - Or CLI: `npx vercel env add DATABASE_URL` (paste the URI when prompted), then redeploy.
+4. Push the schema + seed:
+   ```bash
+   npm run db:setup
+   ```
+   (locally, with `DATABASE_URL` set in `.env` pointing at your Postgres).
+
+> The schema uses the `postgresql` provider. Without a DB the app falls back to
+> seed data automatically — it never crashes.
+
 ## Deploy
 
 Push to GitHub and import into **Vercel**. Set the env vars above, switch
