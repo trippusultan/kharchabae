@@ -3,7 +3,6 @@ import { rankCities, inr } from "@/lib/cost";
 import { SEED_CITIES, totalOf } from "@/lib/seed";
 import { MapLazy } from "@/components/MapLazy";
 import { CityDeepPanel } from "@/components/CityDeepPanel";
-import { DeepDock } from "@/components/DeepDock";
 
 export const dynamic = "force-static";
 
@@ -112,28 +111,45 @@ export default async function Home() {
           ))}
         </div>
 
-        {/* DEEP DIVE + RANKING */}
-        <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_1.1fr]">
-          <div className="surface flex min-h-[60vh] flex-col p-6 md:p-7">
-            <h2 className="mb-3 text-xl font-bold gold-text">Deep dive</h2>
-            <p className="text-sm leading-relaxed text-[var(--muted)]">Tap a city pin on the map above to load its neighborhoods & extra costs.</p>
-            <DeepDock totals={totals} />
-          </div>
-
-          <div className="surface flex min-h-[60vh] flex-col p-6 md:p-7">
-            <h2 className="mb-1 text-xl font-bold gold-text">Cheapest → priciest</h2>
-            <p className="mb-4 text-sm text-[var(--muted)]">Monthly cost of living, ranked across {ranked.length} cities.</p>
-            <div className="-mr-2 flex-1 space-y-2 overflow-auto pr-2">
-              {ranked.map((c) => (
-                <a key={c.slug} href={`/city/${c.slug}`}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-[var(--line)] bg-[var(--bg-2)] px-4 py-3 transition hover:border-[var(--gold)]">
-                  <span className="flex items-center gap-3">
-                    <span className="w-6 text-sm font-semibold text-[var(--muted)]">{c.rank}</span>
-                    <span className="font-semibold">{c.name}</span>
-                  </span>
-                  <span className="gold-text font-bold">{inr(c.total)}<span className="ml-1 text-xs font-normal text-[var(--muted)]">/mo</span></span>
-                </a>
-              ))}
+        {/* SCROLL SNAPSHOT — the live Deep dive + ranking live inside the map above;
+            this is a compact, non-interactive recap for scrolling users. */}
+        <div className="surface mt-10 p-6 md:p-8">
+          <h2 className="text-xl font-bold gold-text">At a glance</h2>
+          <p className="mt-1 text-sm text-[var(--muted)]">
+            The full interactive deep dive & ranking live on the map above — tap any pin.
+          </p>
+          <div className="mt-5 grid gap-6 sm:grid-cols-2">
+            <div>
+              <div className="mb-2 text-sm font-semibold gold-text">Cheapest</div>
+              <div className="space-y-2">
+                {ranked.slice(0, 5).map((c) => (
+                  <a key={c.slug} href={`/city/${c.slug}`}
+                    className="flex items-center justify-between gap-3 rounded-xl px-4 py-2.5 transition hover:border-[var(--gold)] rank-row"
+                    style={{ border: "1px solid transparent" }}>
+                    <span className="flex items-center gap-3">
+                      <span className="w-5 text-sm font-semibold text-[var(--muted)]">{c.rank}</span>
+                      <span className="font-semibold">{c.name}</span>
+                    </span>
+                    <span className="gold-text font-bold">{inr(c.total)}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div className="mb-2 text-sm font-semibold gold-text">Priciest</div>
+              <div className="space-y-2">
+                {ranked.slice(-5).reverse().map((c) => (
+                  <a key={c.slug} href={`/city/${c.slug}`}
+                    className="flex items-center justify-between gap-3 rounded-xl px-4 py-2.5 transition hover:border-[var(--gold)] rank-row"
+                    style={{ border: "1px solid transparent" }}>
+                    <span className="flex items-center gap-3">
+                      <span className="w-5 text-sm font-semibold text-[var(--muted)]">{c.rank}</span>
+                      <span className="font-semibold">{c.name}</span>
+                    </span>
+                    <span className="gold-text font-bold">{inr(c.total)}</span>
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </div>
