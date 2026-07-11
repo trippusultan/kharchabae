@@ -310,6 +310,12 @@ export function IndiaMapPro({ totals, full }: { totals: Record<string, number>; 
     vel.current = { x: 0, y: 0 };
     target.current = { k, x: W / 2 - wx * k, y: H / 2 - wy * k };
   }
+  function flyToCity(slug: string, k = 3.2) {
+    const c = CITIES_GEO.find((x) => x.slug === slug);
+    if (!c) return;
+    const p = base([c.lng, c.lat]) as [number, number];
+    flyToWorldCenter(p[0], p[1], k);
+  }
   function onMini(e: React.PointerEvent) {
     const svg = miniSvgRef.current; if (!svg) return;
     (e.target as Element).setPointerCapture?.(e.pointerId);
@@ -382,6 +388,52 @@ export function IndiaMapPro({ totals, full }: { totals: Record<string, number>; 
           </button>
         </div>
       )}
+
+      {full && (() => {
+        const rankedInMap = [...CITIES_GEO]
+          .map((c) => ({ slug: c.slug, name: c.name, total: totals[c.slug] || 0 }))
+          .filter((c) => c.total > 0)
+          .sort((a, b) => a.total - b.total);
+        const sel = activeCity ? CITIES_GEO.find((c) => c.slug === activeCity) : null;
+        const selTotal = sel ? totals[sel.slug] || 0 : 0;
+        return (
+          <>
+            {/* DEEP DIVE panel (left) */}
+            <div className="panel-neo pointer-events-auto absolute left-4 top-[140px] z-20 w-[260px] p-5">
+              <h3 className="text-lg font-bold gold-text">Deep dive</h3>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
+                {sel
+                  ? `${sel.name} · ${inr(selTotal)}/mo. Pick a neighborhood or tap another pin.`
+                  : "Tap a city pin on the map above to load its neighborhoods & extra costs."}
+              </p>
+              {sel && (
+                <button className="gold-pill mt-4 text-xs" onClick={() => { setActiveCity(null); reset(); }}>
+                  ← back to India
+                </button>
+              )}
+            </div>
+
+            {/* CHEAPEST → PRICIEST panel (right) */}
+            <div className="panel-neo pointer-events-auto absolute right-4 top-[140px] z-20 flex max-h-[calc(100vh-180px)] w-[280px] flex-col p-5">
+              <h3 className="text-lg font-bold gold-text">Cheapest <span className="text-[var(--muted)]">→</span> priciest</h3>
+              <p className="mb-3 mt-1 text-sm text-[var(--muted)]">Monthly cost of living, ranked across {rankedInMap.length} cities.</p>
+              <div className="-mr-1 flex-1 space-y-2 overflow-y-auto pr-1">
+                {rankedInMap.map((c, i) => (
+                  <button key={c.slug} onClick={() => { setActiveCity(c.slug); flyToCity(c.slug); }}
+                    className="rank-row flex w-full items-center justify-between gap-2 px-3 py-2 text-left transition hover:border-[var(--gold)]"
+                    style={{ border: "1px solid transparent" }}>
+                    <span className="flex items-center gap-2">
+                      <span className="w-5 text-xs font-semibold text-[var(--muted)]">{i + 1}</span>
+                      <span className="text-sm font-semibold">{c.name}</span>
+                    </span>
+                    <span className="gold-text text-sm font-bold">{inr(c.total)}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </>
+        );
+      })()}
 
       <div className={full ? "relative h-screen w-full overflow-hidden" : "relative overflow-hidden rounded-xl"}>
       <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} className="w-full touch-none select-none"
@@ -488,8 +540,8 @@ export function IndiaMapPro({ totals, full }: { totals: Record<string, number>; 
         </g>
       </svg>
 
-      {/* minimap overview (bottom-right, draggable viewport) */}
-      <div className="absolute bottom-4 right-4 neo p-2 rounded-xl z-20" style={{ width: MINI_W, pointerEvents: "auto" }}>
+      {/* minimap overview (bottom-center, draggable viewport) */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 neo p-2 rounded-xl z-20" style={{ width: MINI_W, pointerEvents: "auto" }}>
         <svg ref={miniSvgRef} viewBox={`0 0 ${MINI_W} ${MINI_H}`} className="w-full touch-none select-none cursor-pointer"
           style={{ height: MINI_H, display: "block" }} onPointerDown={onMini}
           role="img" aria-label="Map overview. Drag to recenter.">
