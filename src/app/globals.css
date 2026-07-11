@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+:root {
+  /* Matte black neomorphism palette — GOLD only accent */
+  --bg: #0a0a0a;
+  --surface: #141414;
+  --surface-2: #1b1b1b;
+  --gold: #c9a227;
+  --gold-soft: #e7c75a;
+  --text: #e8e3d6;
+  --muted: #8a8475;
+  /* neomorphic shadows: dark below, light above (subtle) */
+  --sh-dark: #000000;
+  --sh-light: #202020;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", system-ui, sans-serif;
+  min-height: 100vh;
+  letter-spacing: 0.2px;
+}
+
+.gold { color: var(--gold); }
+.gold-soft { color: var(--gold-soft); }
+
+/* Neomorphic raised surface */
+.neo {
+  background: linear-gradient(145deg, var(--surface-2), var(--surface));
+  border-radius: 22px;
+  box-shadow: 8px 8px 18px var(--sh-dark), -8px -8px 18px var(--sh-light);
+  border: 1px solid rgba(201, 162, 39, 0.06);
+}
+
+/* Neomorphic pressed (inset) */
+.neo-inset {
+  background: var(--bg);
+  border-radius: 18px;
+  box-shadow: inset 6px 6px 14px var(--sh-dark), inset -6px -6px 14px var(--sh-light);
+}
+
+/* Gold gradient text */
+.gold-text {
+  background: linear-gradient(120deg, var(--gold-soft), var(--gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.btn-gold {
+  background: linear-gradient(145deg, var(--gold-soft), var(--gold));
+  color: #0a0a0a;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 12px 22px;
+  box-shadow: 5px 5px 12px var(--sh-dark), -3px -3px 10px var(--sh-light);
+  transition: transform 0.12s ease;
+}
+.btn-gold:hover { transform: scale(1.03); }
+
+h1, h2, h3 { color: var(--text); font-weight: 700; }
+
+a { color: var(--gold); text-decoration: none; }
+a:hover { color: var(--gold-soft); }
+
+/* Accessibility: visible focus for keyboard, suppressed default box on mouse/touch */
+svg path, svg g, svg circle, svg text { outline: none; }
+svg { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 6px; }
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+/* Map "you are here" pulse */
+@keyframes pinPulse {
+  0%   { transform: scale(0.6); opacity: 0.55; }
+  70%  { opacity: 0.12; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+.pin-pulse { animation: pinPulse 1.8s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+@media (prefers-reduced-motion: reduce) {
+  .pin-pulse { animation: none; opacity: 0.3; }
+}
+
+/* State hover elevation (parallax lift) — GPU only, no per-frame JS */
+.state-path {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform .18s ease, fill .2s ease, filter .2s ease;
+}
+.state-path:hover {
+  transform: scale(1.04);
+  stroke: #e7c75a;
+  filter: drop-shadow(0 0 10px rgba(201, 162, 39, 0.6));
+}
+@media (prefers-reduced-motion: reduce) {
+  .state-path:hover { transform: none; }
+}
+
+/* Constellation connector shimmer */
+.constellation { animation: linkPulse 3.2s ease-in-out infinite; }
+@keyframes linkPulse {
+  0%, 100% { opacity: 0.12; }
+  50% { opacity: 0.34; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .constellation { animation: none; }
+}
+
+/* Compare connector: marching dashes */
+.compare-link { animation: dashFlow 1s linear infinite; }
+@keyframes dashFlow { to { stroke-dashoffset: -22; } }
+@media (prefers-reduced-motion: reduce) {
+  .compare-link { animation: none; }
+}
+
+/* City pin staggered pop-in */
+.pin-pop { animation: pinPop .42s cubic-bezier(.2,.8,.2,1) both; transform-box: fill-box; transform-origin: center; }
+@keyframes pinPop {
+  0% { opacity: 0; transform: scale(0.4); }
+  60% { opacity: 1; transform: scale(1.12); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pin-pop { animation: none; }
+}

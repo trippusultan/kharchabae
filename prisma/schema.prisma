@@ -1,0 +1,48 @@
+// KharchaBae — schema
+// NOTE: dev uses SQLite so `npm run dev` works with zero setup.
+// For production, change provider to "postgresql" and set DATABASE_URL to your Postgres URL.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model City {
+  id        String         @id @default(cuid())
+  slug      String         @unique
+  name      String
+  createdAt DateTime       @default(now())
+  snapshots CostSnapshot[]
+}
+
+model CostSnapshot {
+  id        String   @id @default(cuid())
+  cityId    String
+  city      City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  month     String // "2026-07"
+  housing   Float
+  food      Float
+  commute   Float
+  utilities Float
+  internet    Float
+  misc        Float
+  total       Float
+  source    String // "live" | "seed" (overall)
+  sources   String? // JSON: per-bucket "live"|"live-api"|"ref"|"est"|"seed"
+  createdAt DateTime @default(now())
+  @@unique([cityId, month])
+}
+
+model Subscription {
+  id            String   @id @default(cuid())
+  phone         String @unique // contact for UPI / Razorpay
+  citySlug      String?
+  plan          String   @default("free") // free | bae | pro
+  status        String   @default("created") // created | active | expired
+  razorpaySubId String?
+  createdAt     DateTime @default(now())
+}
