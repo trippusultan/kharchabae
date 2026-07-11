@@ -3,9 +3,7 @@ import { rankCities, inr } from "@/lib/cost";
 import { SEED_CITIES, totalOf } from "@/lib/seed";
 import { MapLazy } from "@/components/MapLazy";
 import { CityDeepPanel } from "@/components/CityDeepPanel";
-import { SetupStatusPanel } from "@/components/SetupStatus";
 import { DeepDock } from "@/components/DeepDock";
-import { getSetupStatus } from "@/lib/setup";
 
 export const dynamic = "force-static";
 
@@ -110,16 +108,6 @@ export default async function Home() {
       <p className="text-center text-sm text-[var(--muted)] mt-8">
         Shift {priciest.name} → {cheapest.name} = save {inr(cheapest.savesVsPriciest)}/mo · data via Bright Data
       </p>
-
-      <details className="neo p-6 md:p-7 mt-10">
-        <summary className="font-bold gold-text cursor-pointer text-lg">Methodology & FAQ</summary>
-        <div className="text-[var(--muted)] mt-4 space-y-4 text-sm leading-relaxed">
-          <p>An informative cost-of-living guide for Indians. Each city breaks into six buckets (housing, food, commute, utilities, internet, misc) using median live rents + typical spends.</p>
-          <p><span className="gold">Housing</span> = median of live rental listings (Bright Data). <span className="gold">Commute</span> = official metro pass fares. Other buckets = typical estimates. Badges mark source: live / ref / est / seed.</p>
-        </div>
-      </details>
-
-      <SetupStatusPanel status={getSetupStatus()} />
 
       <footer className="mt-14 pt-8 border-t border-[#1f1f1f] text-center">
         <div className="flex items-center justify-center gap-2 mb-2">

@@ -3,8 +3,6 @@ import { prisma } from "@/lib/db";
 import { inr } from "@/lib/cost";
 import { SEED_CITIES, COST_CATEGORIES } from "@/lib/seed";
 import { CompareWidget } from "@/components/CompareWidget";
-import { SetupStatusPanel } from "@/components/SetupStatus";
-import { getSetupStatus } from "@/lib/setup";
 import { CityBreakdown } from "@/components/CityBreakdown";
 
 export const dynamic = "force-dynamic";
@@ -58,8 +56,6 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
       </section>
 
       <CompareWidget cities={SEED_CITIES.map((c) => ({ slug: c.slug, name: c.name }))} />
-
-      <SetupStatusPanel status={getSetupStatus()} />
     </main>
   );
 }
