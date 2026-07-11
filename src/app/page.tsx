@@ -86,10 +86,10 @@ export default async function Home() {
         {/* hero headline (bottom-left, non-blocking) */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 p-5 md:p-8">
           <div className="pointer-events-auto max-w-xl">
-            <p className="text-lg md:text-2xl font-semibold leading-snug text-[var(--text)]">
+            <p className="text-2xl md:text-4xl font-bold leading-snug text-[var(--text)]">
               India ka asli monthly <span className="gold-text">kharcha</span>.
             </p>
-            <p className="mt-2 text-sm text-[var(--muted)]">
+            <p className="mt-3 text-sm text-[var(--muted)]">
               {ranked.length} cities · spin the map, land on a city, see where your salary goes.
             </p>
           </div>

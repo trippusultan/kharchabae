@@ -335,7 +335,7 @@ export function IndiaMapPro({ totals, full }: { totals: Record<string, number>; 
     window.addEventListener("pointerup", mu);
   }
 
-  const citiesShown = activeState ? totalCitiesIn(activeState) : [];
+  const citiesShown = activeState ? totalCitiesIn(activeState) : CITIES_GEO;
   const areasShown = activeCity && AREA_OFFSETS[activeCity]
     ? AREA_OFFSETS[activeCity].map((a) => {
         const c = CITIES_GEO.find((x) => x.slug === activeCity)!;
