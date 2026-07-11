@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 import { rankCities, inr } from "@/lib/cost";
 import { runRefresh } from "@/lib/queue";
-import { SEED_CITIES } from "@/lib/seed";
+import { SEED_CITIES, totalOf } from "@/lib/seed";
 import { IndiaMapPro } from "@/components/IndiaMapPro";
 import { CityDeepPanel } from "@/components/CityDeepPanel";
 import { SetupStatusPanel } from "@/components/SetupStatus";
@@ -10,9 +10,46 @@ import { getSetupStatus } from "@/lib/setup";
 
 export const dynamic = "force-dynamic";
 
-async function ensureData() {
-  const count = await prisma.city.count();
-  if (count === 0) await runRefresh().catch(() => {});
+type Row = { slug: string; name: string; total: number; source: string; blurb: string };
+
+// Seed-derived baseline so the site always renders, even with no DB / empty DB.
+function seedRows(): Row[] {
+  return SEED_CITIES.map((c) => ({
+    slug: c.slug,
+    name: c.name,
+    total: totalOf(c),
+    source: "seed",
+    blurb: c.blurb,
+  }));
+}
+
+async function loadRows(): Promise<Row[]> {
+  const base = seedRows();
+  const bySlug = new Map(base.map((r) => [r.slug, r]));
+  try {
+    const month = new Date().toISOString().slice(0, 7);
+    const cities = await prisma.city.findMany({
+      include: { snapshots: { where: { month }, orderBy: { month: "desc" }, take: 1 } },
+    });
+    for (const c of cities) {
+      const snap = c.snapshots[0];
+      if (!snap) continue;
+      const existing = bySlug.get(c.slug);
+      if (existing) {
+        existing.total = snap.total;
+        existing.source = snap.source;
+        existing.name = c.name;
+      } else {
+        bySlug.set(c.slug, { slug: c.slug, name: c.name, total: snap.total, source: snap.source, blurb: "" });
+      }
+    }
+    // backfill blurbs for any DB-only cities
+    for (const r of bySlug.values()) if (!r.blurb) r.blurb = SEED_CITIES.find((s) => s.slug === r.slug)?.blurb || "";
+    return [...bySlug.values()];
+  } catch {
+    // DB unavailable (e.g. not provisioned yet) — use seed data
+    return base;
+  }
 }
 
 const BLURB: Record<string, string> = Object.fromEntries(
@@ -20,14 +57,7 @@ const BLURB: Record<string, string> = Object.fromEntries(
 );
 
 export default async function Home() {
-  await ensureData();
-  const month = new Date().toISOString().slice(0, 7);
-  const cities = await prisma.city.findMany({
-    include: { snapshots: { where: { month }, orderBy: { month: "desc" }, take: 1 } },
-  });
-  const rows = cities
-    .filter((c) => c.snapshots[0])
-    .map((c) => ({ slug: c.slug, name: c.name, total: c.snapshots[0].total, source: c.snapshots[0].source, blurb: BLURB[c.slug] || "" }));
+  const rows = await loadRows();
   const ranked = rankCities(rows);
   const totals: Record<string, number> = Object.fromEntries(ranked.map((c) => [c.slug, c.total]));
 
