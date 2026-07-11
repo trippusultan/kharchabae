@@ -1,0 +1,14 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "next build",
+  "installCommand": "npm install",
+  "outputDirectory": ".next",
+  "env": {
+    "DATABASE_URL": "@kharchabae-database-url",
+    "BRIGHTDATA_API_KEY": "@kharchabae-brightdata-key",
+    "SBR_WS_ENDPOINT": "@kharchabae-sbr-endpoint",
+    "RAZORPAY_KEY_ID": "@kharchabae-razorpay-id",
+    "RAZORPAY_KEY_SECRET": "@kharchabae-razorpay-secret"
+  }
+}
