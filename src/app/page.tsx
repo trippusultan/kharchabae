@@ -97,8 +97,29 @@ export default async function Home() {
 
       {/* CONTENT */}
       <main className="mx-auto w-full max-w-[var(--maxw)] px-5 md:px-8 py-12 md:py-16">
+        {/* AT A GLANCE — compact strip right under the hero (the full interactive
+            version lives inside the map above). Quick scan of cheapest → priciest. */}
+        <div className="surface mt-10 p-5 md:p-6">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <h2 className="text-lg font-bold gold-text">At a glance</h2>
+            <span className="text-xs text-[var(--muted)]">{ranked.length} cities · tap a pin on the map above</span>
+          </div>
+          <div className="flex items-center gap-2 overflow-x-auto pb-1">
+            {ranked.map((c) => (
+              <a key={c.slug} href={`/city/${c.slug}`}
+                className="rank-row flex shrink-0 items-center gap-2 rounded-full px-3.5 py-2 transition hover:border-[var(--gold)]"
+                style={{ border: "1px solid transparent" }}
+                title={`${c.name} — ${inr(c.total)}/mo`}>
+                <span className="w-4 text-center text-xs font-semibold text-[var(--muted)]">{c.rank}</span>
+                <span className="whitespace-nowrap text-sm font-semibold">{c.name}</span>
+                <span className="gold-text text-sm font-bold">{inr(c.total)}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+
         {/* three pillars */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
           {[
             { t: "Real surveys, not guesses", d: "Costs compiled from public 2024-25 India COL surveys." },
             { t: "City → neighborhood", d: "Drill from state to city to mohalla-level costs." },
@@ -109,49 +130,6 @@ export default async function Home() {
               <div className="mt-2 text-sm leading-relaxed text-[var(--muted)]">{p.d}</div>
             </div>
           ))}
-        </div>
-
-        {/* SCROLL SNAPSHOT — the live Deep dive + ranking live inside the map above;
-            this is a compact, non-interactive recap for scrolling users. */}
-        <div className="surface mt-10 p-6 md:p-8">
-          <h2 className="text-xl font-bold gold-text">At a glance</h2>
-          <p className="mt-1 text-sm text-[var(--muted)]">
-            The full interactive deep dive & ranking live on the map above — tap any pin.
-          </p>
-          <div className="mt-5 grid gap-6 sm:grid-cols-2">
-            <div>
-              <div className="mb-2 text-sm font-semibold gold-text">Cheapest</div>
-              <div className="space-y-2">
-                {ranked.slice(0, 5).map((c) => (
-                  <a key={c.slug} href={`/city/${c.slug}`}
-                    className="flex items-center justify-between gap-3 rounded-xl px-4 py-2.5 transition hover:border-[var(--gold)] rank-row"
-                    style={{ border: "1px solid transparent" }}>
-                    <span className="flex items-center gap-3">
-                      <span className="w-5 text-sm font-semibold text-[var(--muted)]">{c.rank}</span>
-                      <span className="font-semibold">{c.name}</span>
-                    </span>
-                    <span className="gold-text font-bold">{inr(c.total)}</span>
-                  </a>
-                ))}
-              </div>
-            </div>
-            <div>
-              <div className="mb-2 text-sm font-semibold gold-text">Priciest</div>
-              <div className="space-y-2">
-                {ranked.slice(-5).reverse().map((c) => (
-                  <a key={c.slug} href={`/city/${c.slug}`}
-                    className="flex items-center justify-between gap-3 rounded-xl px-4 py-2.5 transition hover:border-[var(--gold)] rank-row"
-                    style={{ border: "1px solid transparent" }}>
-                    <span className="flex items-center gap-3">
-                      <span className="w-5 text-sm font-semibold text-[var(--muted)]">{c.rank}</span>
-                      <span className="font-semibold">{c.name}</span>
-                    </span>
-                    <span className="gold-text font-bold">{inr(c.total)}</span>
-                  </a>
-                ))}
-              </div>
-            </div>
-          </div>
         </div>
 
         <p className="mt-8 text-center text-sm text-[var(--muted)]">
