@@ -13,8 +13,8 @@ type View = { k: number; x: number; y: number };
 const W = 900, H = 1000;
 const EASE = 0.22; // higher = snappier, lower = floatier
 
-export function IndiaMapPro({ totals }: { totals: Record<string, number> }) {
-  const [geo, setGeo] = useState<Feat[]>([]);
+export function IndiaMapPro({ totals, full }: { totals: Record<string, number>; full?: boolean }) {
+  const [geo, setGeo] = useState<Feat[]>(statesData as Feat[]);
   const [activeState, setActiveState] = useState<string | null>(null);
   const [activeCity, setActiveCity] = useState<string | null>(null);
   const [compare, setCompare] = useState<string[]>([]);
@@ -58,8 +58,7 @@ export function IndiaMapPro({ totals }: { totals: Record<string, number> }) {
     return out;
   }, [base]);
 
-  // static, pre-simplified state geometry (no runtime fetch)
-  useEffect(() => { setGeo(statesData as Feat[]); }, []);
+  // static, pre-simplified state geometry (imported at build time)
 
   // imperative animation loop (NO React re-render per frame)
   useEffect(() => {
@@ -148,13 +147,14 @@ export function IndiaMapPro({ totals }: { totals: Record<string, number> }) {
   }, [totals]);
 
   function heatFill(state: string, active: boolean): string {
-    if (active) return "#2a2410";
+    if (active) return "#3a3115";
     const t = stateCost[state];
-    if (!t) return "#141414";
+    if (!t) return "#2e2712";
     const n = (t - heatMin) / (heatMax - heatMin || 1); // 0..1
-    const r = Math.round(28 + (201 - 28) * n);
-    const g = Math.round(58 + (162 - 58) * n);
-    const b = Math.round(43 + (39 - 43) * n);
+    // 2-color system: visible gold floor -> bright gold (all states readable)
+    const r = Math.round(120 + (232 - 120) * n);
+    const g = Math.round(100 + (197 - 100) * n);
+    const b = Math.round(45 + (71 - 45) * n);
     return `rgb(${r},${g},${b})`;
   }
 
@@ -345,7 +345,8 @@ export function IndiaMapPro({ totals }: { totals: Record<string, number> }) {
     : [];
 
   return (
-    <div className="neo p-5 md:p-6 relative">
+    <div className={full ? "relative h-screen w-full overflow-hidden bg-[var(--bg)]" : "neo p-5 md:p-6 relative"}>
+      {!full && (
       <div className="flex items-center gap-2 text-sm mb-4 px-1">
         <button className="gold hover:gold-soft underline" onClick={reset}>🇮🇳 India</button>
         {activeState && (
@@ -363,10 +364,28 @@ export function IndiaMapPro({ totals }: { totals: Record<string, number> }) {
           <span>scroll = zoom · drag = pan</span>
         </span>
       </div>
+      )}
 
-      <div className="relative overflow-hidden rounded-xl">
+      {full && (
+        <div className="absolute top-[84px] left-4 z-20 flex items-center gap-2 text-sm px-1 pointer-events-auto">
+          <button className="gold hover:gold-soft underline" onClick={reset}>🇮🇳 India</button>
+          {activeState && (
+            <span className="text-[var(--muted)]">› <button className="gold underline" onClick={() => { setActiveCity(null); reset(); }}>{activeState}</button></span>
+          )}
+          {activeCity && (
+            <span className="text-[var(--muted)]">› <span className="gold-text">{CITIES_GEO.find((c) => c.slug === activeCity)?.name}</span></span>
+          )}
+          <button type="button" onClick={toggleCompare}
+            className={`ml-3 px-2.5 py-1 rounded-lg text-xs transition ${compareMode ? "bg-[#241f10] text-[#e7c75a]" : "text-[#cfc9ba] hover:bg-[#161616]"}`}
+            style={{ outline: "none" }} aria-pressed={compareMode}>
+            {compareMode ? "✓ Compare: pick 2 cities" : "Compare cities"}
+          </button>
+        </div>
+      )}
+
+      <div className={full ? "relative h-screen w-full overflow-hidden" : "relative overflow-hidden rounded-xl"}>
       <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} className="w-full touch-none select-none"
-        style={{ height: "76vh", cursor: drag.current ? "grabbing" : "grab", display: "block" }}
+        style={{ height: full ? "100vh" : "76vh", cursor: drag.current ? "grabbing" : "grab", display: "block" }}
         onWheel={onWheel} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerLeave={onUp}
         role="application" aria-label="Zoomable map of India. Click a state, then a city, to see costs.">
 
@@ -392,8 +411,8 @@ export function IndiaMapPro({ totals }: { totals: Record<string, number> }) {
                 onClick={() => hasData && clickState(f.name)}
                 onKeyDown={(e) => hasData && (e.key === "Enter" || e.key === " ") && clickState(f.name)}
                 fill={heatFill(f.name, isActive)}
-                stroke={hasData ? "#c9a227" : "#3a3424"}
-                strokeWidth={hasData ? 1.5 : 0.6}
+                stroke={hasData ? "#e8c547" : "#3a3424"}
+                strokeWidth={hasData ? 2.2 : 0.6}
                 vectorEffect="non-scaling-stroke"
                 opacity={activeState && !isActive ? 0.32 : 1}
                 style={{ cursor: hasData ? "pointer" : "default", transition: "fill .2s, opacity .2s" }}
@@ -470,7 +489,7 @@ export function IndiaMapPro({ totals }: { totals: Record<string, number> }) {
       </svg>
 
       {/* minimap overview (bottom-right, draggable viewport) */}
-      <div className="absolute bottom-4 right-4 neo p-2 rounded-xl" style={{ width: MINI_W, pointerEvents: "auto" }}>
+      <div className="absolute bottom-4 right-4 neo p-2 rounded-xl z-20" style={{ width: MINI_W, pointerEvents: "auto" }}>
         <svg ref={miniSvgRef} viewBox={`0 0 ${MINI_W} ${MINI_H}`} className="w-full touch-none select-none cursor-pointer"
           style={{ height: MINI_H, display: "block" }} onPointerDown={onMini}
           role="img" aria-label="Map overview. Drag to recenter.">
@@ -489,11 +508,12 @@ export function IndiaMapPro({ totals }: { totals: Record<string, number> }) {
       </div>
 
       {/* cost heat legend + interactive state list (a11y bridge) */}
+      {!full && (
       <div className="mt-5">
         <div className="flex items-center gap-3 text-xs mb-2" aria-hidden="true">
           <span className="text-[#3ca23e]">Cheaper</span>
           <div className="h-2 flex-1 rounded-full"
-            style={{ background: "linear-gradient(90deg, rgb(28,58,43), rgb(114,110,41), rgb(201,162,39))" }} />
+            style={{ background: "linear-gradient(90deg, rgb(58,50,24), rgb(145,176,55), rgb(232,197,71))" }} />
           <span className="gold-text">Pricier</span>
         </div>
         <ul className="grid grid-cols-2 gap-1.5">
@@ -511,9 +531,10 @@ export function IndiaMapPro({ totals }: { totals: Record<string, number> }) {
           ))}
         </ul>
       </div>
+      )}
 
-      {/* floating compare dock */}
-      {compare.length > 0 && (
+      {/* floating compare dock (non-full mode only) */}
+      {compare.length > 0 && !full && (
         <div className="mt-5 neo-inset p-4 rounded-xl">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs gold-text">Compare {compare.length}/2</span>

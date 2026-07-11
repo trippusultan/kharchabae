@@ -4,6 +4,7 @@ import { inr } from "@/lib/cost";
 import { SEED_CITIES, COST_CATEGORIES } from "@/lib/seed";
 import { CompareWidget } from "@/components/CompareWidget";
 import { CityBreakdown } from "@/components/CityBreakdown";
+import { usdRate, toUsd } from "@/lib/fx";
 
 export const dynamic = "force-dynamic";
 
@@ -28,28 +29,31 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
   const total = snap?.total ?? (b.housing + b.food + b.commute + b.utilities + b.internet + b.misc);
   const sources: Record<string, string> = snap?.sources ? JSON.parse(snap.sources) : {};
 
+  const usd = toUsd(total, await usdRate());
+
   return (
-    <main className="max-w-3xl mx-auto px-5 py-12">
+    <main className="mx-auto w-full max-w-3xl px-5 py-12">
       <a href="/" className="text-sm gold">← back to all cities</a>
 
-      <header className="neo p-8 mt-4 text-center">
+      <header className="surface p-8 mt-4 text-center">
         <h1 className="text-4xl font-black gold-text">{seed.name}</h1>
-        <p className="text-sm text-[var(--muted)] mt-2 max-w-md mx-auto">{seed.blurb}</p>
-        <p className="text-3xl font-extrabold gold-text mt-4">{inr(total)}<span className="text-base text-[var(--muted)]">/month</span></p>
-        <p className="text-xs text-[var(--muted)] mt-1">
-          {snap?.source === "live" ? "● live-scraped" : "○ demo estimate"}
+        <p className="mt-2 max-w-md mx-auto text-sm text-[var(--muted)]">{seed.blurb}</p>
+        <p className="mt-4 text-3xl font-extrabold gold-text">{inr(total)}<span className="text-base text-[var(--muted)]">/month</span></p>
+        {usd && <p className="mt-1 text-sm text-[var(--muted)]">≈ {usd}/month · live FX</p>}
+        <p className="mt-1 text-xs text-[var(--muted)]">
+          {snap?.source === "live" ? "● live-scraped" : "○ public 2024-25 survey estimate"}
         </p>
       </header>
 
       <CityBreakdown b={b} total={total} sources={sources} />
 
-      <section className="neo p-7 mt-8">
+      <section className="surface p-7 mt-8">
         <h2 className="text-xl font-bold gold-text">What's included</h2>
-        <div className="grid sm:grid-cols-2 gap-3 mt-4">
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {COST_CATEGORIES.map((cat) => (
-            <div key={cat.key} className="neo-inset p-4">
+            <div key={cat.key} className="rounded-xl border border-[var(--line)] bg-[var(--bg-2)] p-4">
               <div className="font-semibold gold">{cat.label}</div>
-              <div className="text-sm text-[var(--muted)] mt-1">{cat.desc}</div>
+              <div className="mt-1 text-sm text-[var(--muted)]">{cat.desc}</div>
             </div>
           ))}
         </div>

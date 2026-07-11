@@ -1,22 +1,20 @@
 // KharchaBae — geographic linkage: states → our cities → neighborhoods.
-// City coords are approximate real lat/long. Neighborhoods are small offsets.
+// City coords are REAL (geocoded via Open-Meteo, free no-key API, 2024).
 
 export type CityGeo = {
   slug: string; state: string; name: string; lat: number; lng: number;
 };
 
-// state name (as in india-states.geojson NAME_1) -> cities
 export const STATE_OF: Record<string, string> = {
-  bangalore: "Karnataka",
-  mumbai: "Maharashtra",
-  pune: "Maharashtra",
-  goa: "Goa",
-  delhi: "Delhi",
-  hyderabad: "Telangana",
-  chennai: "Tamil Nadu",
-  kolkata: "West Bengal",
-  ahmedabad: "Gujarat",
-  jaipur: "Rajasthan",
+  bangalore: "Karnataka", mumbai: "Maharashtra", pune: "Maharashtra", goa: "Goa",
+  delhi: "Delhi", hyderabad: "Telangana", chennai: "Tamil Nadu", kolkata: "West Bengal",
+  ahmedabad: "Gujarat", jaipur: "Rajasthan", lucknow: "Uttar Pradesh", kanpur: "Uttar Pradesh",
+  patna: "Bihar", ranchi: "Jharkhand", bhubaneswar: "Odisha", raipur: "Chhattisgarh",
+  nagpur: "Maharashtra", indore: "Madhya Pradesh", bhopal: "Madhya Pradesh", surat: "Gujarat",
+  vadodara: "Gujarat", chandigarh: "Chandigarh", ludhiana: "Punjab", amritsar: "Punjab",
+  kochi: "Kerala", thrissur: "Kerala", coimbatore: "Tamil Nadu", madurai: "Tamil Nadu",
+  visakhapatnam: "Andhra Pradesh", vijayawada: "Andhra Pradesh", mysuru: "Karnataka",
+  mangalore: "Karnataka", nashik: "Maharashtra", agra: "Uttar Pradesh",
 };
 
 export const CITIES_GEO: CityGeo[] = [
@@ -30,6 +28,30 @@ export const CITIES_GEO: CityGeo[] = [
   { slug: "kolkata", state: "West Bengal", name: "Kolkata", lat: 22.57, lng: 88.36 },
   { slug: "ahmedabad", state: "Gujarat", name: "Ahmedabad", lat: 23.02, lng: 72.57 },
   { slug: "jaipur", state: "Rajasthan", name: "Jaipur", lat: 26.91, lng: 75.79 },
+  { slug: "lucknow", state: "Uttar Pradesh", name: "Lucknow", lat: 26.839, lng: 80.923 },
+  { slug: "kanpur", state: "Uttar Pradesh", name: "Kanpur", lat: 26.465, lng: 80.35 },
+  { slug: "patna", state: "Bihar", name: "Patna", lat: 25.594, lng: 85.136 },
+  { slug: "ranchi", state: "Jharkhand", name: "Ranchi", lat: 23.343, lng: 85.309 },
+  { slug: "bhubaneswar", state: "Odisha", name: "Bhubaneswar", lat: 20.272, lng: 85.834 },
+  { slug: "raipur", state: "Chhattisgarh", name: "Raipur", lat: 21.233, lng: 81.633 },
+  { slug: "nagpur", state: "Maharashtra", name: "Nagpur", lat: 21.146, lng: 79.085 },
+  { slug: "indore", state: "Madhya Pradesh", name: "Indore", lat: 22.718, lng: 75.833 },
+  { slug: "bhopal", state: "Madhya Pradesh", name: "Bhopal", lat: 23.255, lng: 77.403 },
+  { slug: "surat", state: "Gujarat", name: "Surat", lat: 21.196, lng: 72.83 },
+  { slug: "vadodara", state: "Gujarat", name: "Vadodara", lat: 22.299, lng: 73.208 },
+  { slug: "chandigarh", state: "Chandigarh", name: "Chandigarh", lat: 30.736, lng: 76.788 },
+  { slug: "ludhiana", state: "Punjab", name: "Ludhiana", lat: 30.912, lng: 75.854 },
+  { slug: "amritsar", state: "Punjab", name: "Amritsar", lat: 31.622, lng: 74.875 },
+  { slug: "kochi", state: "Kerala", name: "Kochi", lat: 9.94, lng: 76.26 },
+  { slug: "thrissur", state: "Kerala", name: "Thrissur", lat: 10.517, lng: 76.217 },
+  { slug: "coimbatore", state: "Tamil Nadu", name: "Coimbatore", lat: 11.006, lng: 76.966 },
+  { slug: "madurai", state: "Tamil Nadu", name: "Madurai", lat: 9.919, lng: 78.12 },
+  { slug: "visakhapatnam", state: "Andhra Pradesh", name: "Visakhapatnam", lat: 17.68, lng: 83.202 },
+  { slug: "vijayawada", state: "Andhra Pradesh", name: "Vijayawada", lat: 16.507, lng: 80.647 },
+  { slug: "mysuru", state: "Karnataka", name: "Mysuru", lat: 12.298, lng: 76.639 },
+  { slug: "mangalore", state: "Karnataka", name: "Mangalore", lat: 12.846, lng: 74.841 },
+  { slug: "nashik", state: "Maharashtra", name: "Nashik", lat: 19.997, lng: 73.791 },
+  { slug: "agra", state: "Uttar Pradesh", name: "Agra", lat: 27.183, lng: 78.017 },
 ];
 
 // neighborhood offsets (degrees) around each city, for drill-down pins
@@ -103,5 +125,61 @@ export const AREA_OFFSETS: Record<string, { name: string; dlat: number; dlng: nu
     { name: "Malviya Nagar", dlat: -0.03, dlng: 0.02 },
     { name: "Mansarovar", dlat: -0.06, dlng: 0.03 },
     { name: "Tonk Road", dlat: -0.02, dlng: -0.03 },
+  ],
+  lucknow: [
+    { name: "Gomti Nagar", dlat: 0.03, dlng: 0.03 },
+    { name: "Hazratganj", dlat: 0.01, dlng: 0.0 },
+    { name: "Alambagh", dlat: -0.04, dlng: -0.03 },
+    { name: "Indira Nagar", dlat: 0.04, dlng: 0.02 },
+    { name: "AsHiya", dlat: -0.03, dlng: 0.04 },
+  ],
+  indore: [
+    { name: "Vijay Nagar", dlat: 0.03, dlng: 0.03 },
+    { name: "Palasia", dlat: 0.01, dlng: 0.0 },
+    { name: "Bhawar Kuan", dlat: -0.03, dlng: -0.03 },
+    { name: "Rajendra Nagar", dlat: -0.04, dlng: 0.02 },
+    { name: "Scheme 78", dlat: 0.02, dlng: 0.04 },
+  ],
+  bhopal: [
+    { name: "MP Nagar", dlat: 0.02, dlng: 0.02 },
+    { name: "Arera Colony", dlat: 0.03, dlng: 0.0 },
+    { name: "Kolar", dlat: -0.05, dlng: 0.05 },
+    { name: "Old City", dlat: -0.03, dlng: -0.03 },
+    { name: "Habibganj", dlat: 0.04, dlng: 0.03 },
+  ],
+  nagpur: [
+    { name: "Dharampeth", dlat: 0.02, dlng: 0.01 },
+    { name: "Wardha Road", dlat: -0.05, dlng: 0.04 },
+    { name: "Sitabuldi", dlat: 0.0, dlng: 0.0 },
+    { name: "MANCH", dlat: 0.03, dlng: -0.03 },
+    { name: "Hingna", dlat: -0.06, dlng: -0.04 },
+  ],
+  surat: [
+    { name: "Vesu", dlat: 0.03, dlng: 0.03 },
+    { name: "Adajan", dlat: 0.02, dlng: -0.03 },
+    { name: "City Light", dlat: 0.01, dlng: 0.01 },
+    { name: "Udhna", dlat: -0.04, dlng: -0.03 },
+    { name: "Pal", dlat: -0.03, dlng: 0.02 },
+  ],
+  kochi: [
+    { name: "Kakkanad", dlat: 0.03, dlng: 0.03 },
+    { name: "Fort Kochi", dlat: 0.02, dlng: -0.05 },
+    { name: "Edappally", dlat: 0.01, dlng: 0.02 },
+    { name: "Marine Drive", dlat: 0.0, dlng: 0.0 },
+    { name: "Tripunithura", dlat: -0.04, dlng: 0.03 },
+  ],
+  coimbatore: [
+    { name: "RS Puram", dlat: 0.02, dlng: 0.01 },
+    { name: "Peelamedu", dlat: -0.03, dlng: 0.03 },
+    { name: "Saibaba Colony", dlat: 0.03, dlng: -0.02 },
+    { name: "Saravanampatti", dlat: 0.05, dlng: 0.04 },
+    { name: "Gandhipuram", dlat: 0.0, dlng: 0.0 },
+  ],
+  chandigarh: [
+    { name: "Sector 17", dlat: 0.01, dlng: 0.0 },
+    { name: "Sector 22", dlat: 0.02, dlng: -0.02 },
+    { name: "Mohali", dlat: -0.04, dlng: 0.04 },
+    { name: "Sector 35", dlat: -0.02, dlng: 0.02 },
+    { name: "Panchkula", dlat: 0.04, dlng: -0.03 },
   ],
 };

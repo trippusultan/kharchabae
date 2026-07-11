@@ -62,60 +62,94 @@ export default async function Home() {
   const priciest = ranked[ranked.length - 1];
 
   return (
-    <main className="max-w-7xl mx-auto px-5 md:px-8 py-10 md:py-16">
-      {/* HERO + logo lockup */}
-      <header className="mb-10 md:mb-14">
-        <div className="flex items-center justify-center gap-4 mb-5">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#2a2410] to-[#141414] border border-[#3a3424] flex items-center justify-center shadow-[0_0_28px_rgba(201,162,39,0.25)]">
-            <span className="text-3xl font-black gold-text leading-none">₹</span>
+    <>
+      {/* FULL-SCREEN MAP HERO */}
+      <section className="relative h-screen w-full overflow-hidden bg-[var(--bg)]">
+        <MapLazy totals={totals} full />
+
+        {/* overlay brand bar */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-4 p-5 md:p-7">
+          <div className="pointer-events-auto flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--line)] bg-[var(--bg-2)] shadow-[0_0_28px_-6px_rgba(232,197,71,0.35)]">
+              <span className="text-2xl font-black gold-text leading-none">₹</span>
+            </div>
+            <div className="leading-none">
+              <h1 className="text-2xl md:text-3xl font-extrabold gold-text tracking-tight">KharchaBae</h1>
+              <p className="mt-1 text-[10px] md:text-[11px] uppercase tracking-[0.22em] text-[var(--muted)]">Cost of living, decoded</p>
+            </div>
           </div>
-          <div className="leading-none">
-            <h1 className="text-4xl md:text-5xl font-black gold-text tracking-tight">KharchaBae</h1>
-            <p className="text-[10px] md:text-xs text-[var(--muted)] tracking-[0.22em] uppercase mt-2">Cost of living, decoded</p>
+          <span className="pointer-events-none hidden rounded-full border border-[var(--line)] bg-[var(--bg-2)]/80 px-3 py-1.5 text-xs text-[var(--muted)] backdrop-blur sm:inline-block">
+            scroll = zoom · drag = pan · tap a city
+          </span>
+        </div>
+
+        {/* hero headline (bottom-left, non-blocking) */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 p-5 md:p-8">
+          <div className="pointer-events-auto max-w-xl">
+            <p className="text-lg md:text-2xl font-semibold leading-snug text-[var(--text)]">
+              India ka asli monthly <span className="gold-text">kharcha</span>.
+            </p>
+            <p className="mt-2 text-sm text-[var(--muted)]">
+              {ranked.length} cities · spin the map, land on a city, see where your salary goes.
+            </p>
           </div>
         </div>
-        <p className="text-center text-[var(--muted)] text-sm max-w-2xl mx-auto leading-relaxed">
-          India ka asli monthly kharcha. Spin the map, land on a city, and see exactly where your salary goes — rent, food, commute, the whole <span className="gold-text">kharcha</span>.
-        </p>
+      </section>
 
+      {/* CONTENT */}
+      <main className="mx-auto w-full max-w-[var(--maxw)] px-5 md:px-8 py-12 md:py-16">
         {/* three pillars */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           {[
-            { t: "Live, not guesses", d: "Median rents pulled via Bright Data — not blog opinions." },
+            { t: "Real surveys, not guesses", d: "Costs compiled from public 2024-25 India COL surveys." },
             { t: "City → neighborhood", d: "Drill from state to city to mohalla-level costs." },
             { t: "Compare & share", d: "Stack two cities, see the gap, send the link." },
           ].map((p) => (
-            <div key={p.t} className="neo p-5 rounded-2xl text-center">
+            <div key={p.t} className="surface p-5 rounded-2xl text-center">
               <div className="text-base font-bold gold-text">{p.t}</div>
-              <div className="text-[var(--muted)] text-sm mt-2 leading-relaxed">{p.d}</div>
+              <div className="mt-2 text-sm leading-relaxed text-[var(--muted)]">{p.d}</div>
             </div>
           ))}
         </div>
-      </header>
 
-      <div className="grid lg:grid-cols-[1.6fr_1fr] gap-8">
-        {/* HEART: the map */}
-        <MapLazy totals={totals} />
+        {/* DEEP DIVE + RANKING */}
+        <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_1.1fr]">
+          <div className="surface flex min-h-[60vh] flex-col p-6 md:p-7">
+            <h2 className="mb-3 text-xl font-bold gold-text">Deep dive</h2>
+            <p className="text-sm leading-relaxed text-[var(--muted)]">Tap a city pin on the map above to load its neighborhoods & extra costs.</p>
+            <DeepDock totals={totals} />
+          </div>
 
-        {/* DOCK: deep cost of selected city (client-side state via a tiny wrapper) */}
-        <div className="neo p-6 md:p-7 min-h-[64vh] flex flex-col">
-          <h2 className="text-xl font-bold gold-text mb-3">Deep dive</h2>
-          <p className="text-[var(--muted)] text-sm leading-relaxed">Tap a city pin on the map to load its neighborhoods & extra costs.</p>
-          <DeepDock totals={totals} />
+          <div className="surface flex min-h-[60vh] flex-col p-6 md:p-7">
+            <h2 className="mb-1 text-xl font-bold gold-text">Cheapest → priciest</h2>
+            <p className="mb-4 text-sm text-[var(--muted)]">Monthly cost of living, ranked across {ranked.length} cities.</p>
+            <div className="-mr-2 flex-1 space-y-2 overflow-auto pr-2">
+              {ranked.map((c) => (
+                <a key={c.slug} href={`/city/${c.slug}`}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-[var(--line)] bg-[var(--bg-2)] px-4 py-3 transition hover:border-[var(--gold)]">
+                  <span className="flex items-center gap-3">
+                    <span className="w-6 text-sm font-semibold text-[var(--muted)]">{c.rank}</span>
+                    <span className="font-semibold">{c.name}</span>
+                  </span>
+                  <span className="gold-text font-bold">{inr(c.total)}<span className="ml-1 text-xs font-normal text-[var(--muted)]">/mo</span></span>
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
 
-      <p className="text-center text-sm text-[var(--muted)] mt-8">
-        Shift {priciest.name} → {cheapest.name} = save {inr(cheapest.savesVsPriciest)}/mo · data via Bright Data
-      </p>
+        <p className="mt-8 text-center text-sm text-[var(--muted)]">
+          Shift {priciest.name} → {cheapest.name} = save {inr(cheapest.savesVsPriciest)}/mo.
+        </p>
 
-      <footer className="mt-14 pt-8 border-t border-[#1f1f1f] text-center">
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <span className="text-lg font-black gold-text">₹</span>
-          <span className="text-sm font-bold gold-text tracking-tight">KharchaBae</span>
-        </div>
-        <p className="text-[var(--muted)] text-xs">Paisa samajh lo. · Cost-of-living intelligence for India.</p>
-      </footer>
-    </main>
+        <footer className="mt-14 border-t border-[var(--line)] pt-8 text-center">
+          <div className="mb-2 flex items-center justify-center gap-2">
+            <span className="text-lg font-black gold-text">₹</span>
+            <span className="text-sm font-bold gold-text tracking-tight">KharchaBae</span>
+          </div>
+          <p className="text-xs text-[var(--muted)]">Paisa samajh lo. · Cost-of-living intelligence for India.</p>
+        </footer>
+      </main>
+    </>
   );
 }
